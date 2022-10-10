@@ -22,7 +22,7 @@ for(let item of getItem) {
     img.alt = data.altTxt
     divImg.appendChild(img)
 
-    let divContent =document.createElement("div")
+    let divContent = document.createElement("div")
     divContent.classList.add("cart__item__content")
     article.appendChild(divContent)
 
@@ -64,15 +64,22 @@ for(let item of getItem) {
     addQuantity.type = "number"
     addQuantity.classList.add("itemQuantity")
     Contentsettings.appendChild(addQuantity)
-
+    
+    let totalPrice = document.getElementById("totalPrice");
     addQuantity.addEventListener('change', (e) =>{
-        item.quantity = Number(e.target.value)
-        console.log(item.quantity)
-        localStorage.setItem('items', JSON.stringify(getItem));    
-        window.location.reload()
+
+        let quantityChange = Number(e.target.value)
+        let totalQuantity = item.quantity
+        console.log(getItem)
+        
+        totalQuantity += quantityChange
+        getItem.push(totalQuantity) 
+        localStorage.setItem('items', JSON.stringify(getItem));
+        
+
     })
 
-    let divDelete =document.createElement("div")
+    let divDelete = document.createElement("div")
     divDelete.classList.add("cart__item__content__settings__delete")
     Contentsettings.appendChild(divDelete)
 
@@ -80,15 +87,5 @@ for(let item of getItem) {
     deleteItem.classList.add("deleteItem")
     deleteItem.innerText = "Supprimer"
     divDelete.appendChild(deleteItem)
-
-    let totalQuantity = document.getElementById("totalQuantity");
-    let addTotalQuantity = []
-    addTotalQuantity.push(numberInit += item.quantity)
-    totalQuantity.innerText = addTotalQuantity
-
-    let totalPrice = document.getElementById("totalPrice");
-    let multip = initPrice +=(item.quantity * data.price)
-    console.log(multip)
-    totalPrice.innerText = multip
 })
 }

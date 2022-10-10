@@ -70,7 +70,7 @@ let id = params.get('id');
             getItem.push(newItem);
             localStorage.setItem('items', JSON.stringify(getItem));
         }
-        localStorage.clear(items)
+        // localStorage.clear(('items'))
     })
 })
 
