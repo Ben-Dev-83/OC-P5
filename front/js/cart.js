@@ -42,7 +42,7 @@ for(let item of getItem) {
     quantity.innerText = `${data.price} €`
     contentDescription.appendChild(quantity)
 
-    let Contentsettings =document.createElement("div")
+    let Contentsettings = document.createElement("div")
     Contentsettings.classList.add("cart__item__content__settings")
     divContent.appendChild(Contentsettings)
     
@@ -56,28 +56,35 @@ for(let item of getItem) {
     quantity.innerText = `${data.price} €`
     Contentquantity.append(price)
 
-    let addQuantity =document.createElement("input")
-    addQuantity.name = "itemQuantity"
-    addQuantity.value = item.quantity
-    addQuantity.min = 0
-    addQuantity.max = 100
-    addQuantity.type = "number"
-    addQuantity.classList.add("itemQuantity")
-    Contentsettings.appendChild(addQuantity)
+    let addQuantity =document.createElement("input");
+    addQuantity.name = "itemQuantity";
+    addQuantity.value = item.quantity;
+    addQuantity.min = 1;
+    addQuantity.max = 100;
+    addQuantity.type = "number";
+    addQuantity.classList.add("itemQuantity");
+    Contentsettings.appendChild(addQuantity);
     
+    let totalQty = document.getElementById("totalQuantity");
     let totalPrice = document.getElementById("totalPrice");
+    const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
+    totalQty.innerHTML = total;
+
+    let arraytotal = []
+    // let pricetest = item.quantity * data.price
+    let pricetest = item.quantity * data.price
+
+    console.log(pricetest)
+    // totalPrice.innerHTML = totalpriceItem;
+    
     addQuantity.addEventListener('change', (e) =>{
-
-        let quantityChange = Number(e.target.value)
-        let totalQuantity = item.quantity
-        console.log(getItem)
-        
-        totalQuantity += quantityChange
-        getItem.push(totalQuantity) 
+        item.quantity = Number(e.target.value);
         localStorage.setItem('items', JSON.stringify(getItem));
+        const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
+        totalQty.innerHTML = total;
         
-
     })
+    
 
     let divDelete = document.createElement("div")
     divDelete.classList.add("cart__item__content__settings__delete")
@@ -89,3 +96,6 @@ for(let item of getItem) {
     divDelete.appendChild(deleteItem)
 })
 }
+let pricetest = getItem
+
+console.log(pricetest)
