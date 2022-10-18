@@ -1,6 +1,7 @@
 let getItem = JSON.parse(localStorage.getItem('items'));
 let numberInit= 0
 let initPrice =0
+
 for(let item of getItem) {
     fetch(`http://localhost:3000/api/products/${item.id}`)
     .then(response => response.json())
@@ -66,36 +67,40 @@ for(let item of getItem) {
     Contentsettings.appendChild(addQuantity);
     
     let totalQty = document.getElementById("totalQuantity");
-    let totalPrice = document.getElementById("totalPrice");
     const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
     totalQty.innerHTML = total;
 
-    let arraytotal = []
-    // let pricetest = item.quantity * data.price
-    let pricetest = item.quantity * data.price
-
-    console.log(pricetest)
-    // totalPrice.innerHTML = totalpriceItem;
+    let totalPrice = document.getElementById("totalPrice");
+    if(data._id === item.id) {
+        item.price = data.price
+        item.subTotal = item.quantity * item.price
+        let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
+        totalPrice.innerHTML = totalItemPrice 
+    }
     
     addQuantity.addEventListener('change', (e) =>{
+
         item.quantity = Number(e.target.value);
         localStorage.setItem('items', JSON.stringify(getItem));
         const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
         totalQty.innerHTML = total;
-        
+
+        if(data._id === item.id) {
+            item.subTotal = item.quantity * item.price
+            let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
+            totalPrice.innerHTML = totalItemPrice 
+        }
     })
     
-
     let divDelete = document.createElement("div")
     divDelete.classList.add("cart__item__content__settings__delete")
     Contentsettings.appendChild(divDelete)
-
+    
     let deleteItem = document.createElement("p")
     deleteItem.classList.add("deleteItem")
     deleteItem.innerText = "Supprimer"
     divDelete.appendChild(deleteItem)
+    
+    
 })
 }
-let pricetest = getItem
-
-console.log(pricetest)
