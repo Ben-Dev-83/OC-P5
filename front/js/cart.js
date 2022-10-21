@@ -79,7 +79,6 @@ for(let item of getItem) {
     }
     
     addQuantity.addEventListener('change', (e) =>{
-
         item.quantity = Number(e.target.value);
         localStorage.setItem('items', JSON.stringify(getItem));
         const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
@@ -100,6 +99,12 @@ for(let item of getItem) {
     deleteItem.classList.add("deleteItem")
     deleteItem.innerText = "Supprimer"
     divDelete.appendChild(deleteItem)
+    deleteItem.addEventListener("click", (e) =>{
+        deleteItem.closest(".cart__item")
+        console.log(localStorage.removeItem("items[0]"))
+        section.removeChild(article)
+        localStorage.removeItem()
+    })
     
     
 })
