@@ -32,17 +32,16 @@ let id = params.get('id');
         chooseColor.appendChild(option);
     })
     
+    let itemQuantity = document.getElementById("quantity");
     function quantity() {   
-        let itemQuantity = document.getElementById("quantity");
         return Number(itemQuantity.value);
     }
     
     class Item {
-        constructor(id, color, quantity, img) {
+        constructor(id, color, quantity) {
             this.id = id;
             this.color = color;
             this.quantity = quantity;
-            this.img = img
         }
     }
     
@@ -52,10 +51,10 @@ let id = params.get('id');
         let newItem = new Item(data._id, chooseColor.value, quantity());
         let getItem = JSON.parse(localStorage.getItem('items'));
 
-        if(getItem){
+        if(getItem && newItem.color){
             let changeQty = getItem.find(element => element.id == newItem.id && element.color == newItem.color )
             if(changeQty) {
-                changeQty.quantity += newItem.quantity
+                changeQty.quantity = newItem.quantity
                 localStorage.setItem('items', JSON.stringify(getItem));
             }
             else {
@@ -64,13 +63,12 @@ let id = params.get('id');
                 localStorage.setItem('items', JSON.stringify(getItem));
             }
         }
-        else {
+        else if(newItem.color) {
             getItem= [];
             newItem.img = data.imageUrl
             getItem.push(newItem);
             localStorage.setItem('items', JSON.stringify(getItem));
         }
-        // localStorage.clear(('items'))
     })
 })
 
