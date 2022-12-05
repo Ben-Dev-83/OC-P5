@@ -11,39 +11,29 @@ let getItem = JSON.parse(localStorage.getItem('items'));
 console.log(getItem)
 let numberInit = 0
 let initPrice = 0
+let arrytest= []
 
-
-// section.innerHTML += `
-// <article class="cart__item" data-id="${item.id}" data-color="${item.color}">
-// <div class="cart__item__img">
-// <img src="${data.imageUrl}" alt="${data.altTxt}">
-// </div>
-// <div class="cart__item__content">
-// <div class="cart__item__content__description">
-// <h2>${data.name}</h2>
-// <p>${item.color}</p>
-// <p>${data.price} €</p>
-// </div>
-// <div class="cart__item__content__settings">
-// <div class="cart__item__content__settings__quantity">
-//   <p>Qté : </p>
-//   <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${item.quantity}">
-// </div>
-// <div class="cart__item__content__settings__delete">
-//   <p class="deleteItem">Supprimer</p>
-// </div>
-// </div>
-// </div>
-// </article>`
+arrytest.sort((a, b) => {
+    if (a.id < b.id) {
+        return -1;
+    }
+    if (a.id > b.id) {
+        return 1;
+    }
+    return 0
+})
 for(let item of getItem) {
 
     fetch(`http://localhost:3000/api/products/${item.id}`)
     .then(response => response.json())
     .then(data => {
 
+    const listItem = function() {
+
+    
     let section = document.getElementById("cart__items")
     let article = document.createElement("article")
-
+    arrytest.push(data)
     article.classList.add("cart__item")
     section.appendChild(article)
     article.dataId = item.id
@@ -152,7 +142,21 @@ for(let item of getItem) {
         totalPrice.innerHTML = totalItemPrice 
         totalQty.innerHTML = totalQuantity;
     })
-})}
+}
+
+arrytest.sort((a, b) => {
+    if (a._id < b._id) {
+        return -1;
+    }
+    if (a._id > b._id) {
+        return 1;
+    }
+    return 0
+})
+console.log(arrytest)
+listItem()
+})
+}
 
 
 
