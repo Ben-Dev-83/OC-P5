@@ -1,90 +1,78 @@
 let getItem = JSON.parse(localStorage.getItem('items'));
-// getItem.sort((a, b) => {
-//     if (a.id < b.id) {
-//       return -1;
-//     }
-//     if (a.id > b.id) {
-//       return 1;
-//     }
-//     return 0
-// })
-console.log(getItem)
-let numberInit = 0
-let initPrice = 0
 let arrytest= []
-
-arrytest.sort((a, b) => {
-    if (a.id < b.id) {
-        return -1;
-    }
-    if (a.id > b.id) {
-        return 1;
-    }
-    return 0
-})
 for(let item of getItem) {
-
+    color = item.color
     fetch(`http://localhost:3000/api/products/${item.id}`)
     .then(response => response.json())
     .then(data => {
+        data.color = item.color
+        data.quantity = item.quantity
+        data.id = item.id
+        arrytest.push(data)
+        console.log(arrytest)
+        localStorage.setItem('items', JSON.stringify(arrytest));
+        })
+            }
 
     const listItem = function() {
+                
+                
+        
+        for(let data of getItem) {
+        let section = document.getElementById("cart__items")
+        let article = document.createElement("article")
 
-    
-    let section = document.getElementById("cart__items")
-    let article = document.createElement("article")
-    arrytest.push(data)
-    article.classList.add("cart__item")
-    section.appendChild(article)
-    article.dataId = item.id
-    article.dataColor = item.color
-
-    let divImg = document.createElement("div")
-    divImg.classList.add("cart__item__img")
-    article.appendChild(divImg)
-    
-    let img = document.createElement("img")
-    img.src = data.imageUrl
-    img.alt = data.altTxt
-    divImg.appendChild(img)
-
-    let divContent = document.createElement("div")
-    divContent.classList.add("cart__item__content")
-    article.appendChild(divContent)
-
-    let contentDescription =document.createElement("div")
-    contentDescription.classList.add("cart__item__content__description")
+        article.classList.add("cart__item")
+        section.appendChild(article)
+        article.dataId = data._id
+        article.dataColor = data.color
+        
+        let divImg = document.createElement("div")
+        divImg.classList.add("cart__item__img")
+        article.appendChild(divImg)
+        
+        let img = document.createElement("img")
+        img.src = data.imageUrl
+        img.alt = data.altTxt
+        divImg.appendChild(img)
+        
+        let divContent = document.createElement("div")
+        divContent.classList.add("cart__item__content")
+        article.appendChild(divContent)
+        
+        let contentDescription =document.createElement("div")
+        contentDescription.classList.add("cart__item__content__description")
     divContent.appendChild(contentDescription)
-
+    
     let itemTitle =document.createElement("h2");
     itemTitle.innerText = data.name;
     contentDescription.appendChild(itemTitle);
-
+    
     let color =document.createElement("p");
-    color.innerText = item.color;
+    color.innerText = data.color;
     contentDescription.appendChild(color);
-
+    
     let quantity =document.createElement("p");
     quantity.innerText = `${data.price} €`;
     contentDescription.appendChild(quantity);
-
+    
     let Contentsettings = document.createElement("div");
     Contentsettings.classList.add("cart__item__content__settings");
     divContent.appendChild(Contentsettings);
     
     let Contentquantity =document.createElement("p");
     Contentquantity.classList.add("cart__item__content__settings__quantity");
-    quantity.innerText = `Qté: ${item.quantity}`;
+    quantity.innerText = `Qté: ${data.quantity}`;
     Contentsettings.appendChild(Contentquantity);
-
+    
     let price =document.createElement("p");
     Contentquantity.classList.add("cart__item__content__settings__quantity");
     quantity.innerText = `${data.price} €`;
     Contentquantity.append(price);
-
+    
     let addQuantity =document.createElement("input");
     addQuantity.name = "itemQuantity";
-    addQuantity.value = item.quantity;
+    addQuantity.value = data.quantity;
     addQuantity.min = 1;
     addQuantity.max = 100;
     addQuantity.type = "number";
@@ -94,23 +82,23 @@ for(let item of getItem) {
     let totalQty = document.getElementById("totalQuantity");
     const total = getItem.map(item => item.quantity).reduce((pre, curr) => pre +curr, 0);
     totalQty.innerHTML = total;
-
+    
     let totalPrice = document.getElementById("totalPrice");
-    if(data._id === item.id) {
-        item.price = data.price
-        item.subTotal = item.quantity * item.price
+    if(data._id === data.id) {
+        data.price = data.price
+        data.subTotal = data.quantity * data.price
         let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
         totalPrice.innerHTML = totalItemPrice 
     }
     
     addQuantity.addEventListener('change', (e) =>{
-        item.quantity = Number(e.target.value);
+        data.quantity = Number(e.target.value);
         localStorage.setItem('items', JSON.stringify(getItem));
         const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
         totalQty.innerHTML = total;
-
-        if(data._id === item.id) {
-            item.subTotal = item.quantity * item.price
+        
+        if(data._id === data.id) {
+            data.subTotal = data.quantity * data.price
             let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
             totalPrice.innerHTML = totalItemPrice 
         }
@@ -123,15 +111,16 @@ for(let item of getItem) {
     let deleteItem = document.createElement("p")
     deleteItem.classList.add("deleteItem")
     deleteItem.innerText = "Supprimer"
-    let dataId = article.dataset.id = item.id
-    let dataColor = article.dataset.color = item.color
+    let dataId = article.dataset.id = data.id
+    let dataColor = article.dataset.color = data.color
     divDelete.appendChild(deleteItem)
-
+    
     deleteItem.addEventListener("click", () => {
         deleteItem.closest(".cart__item")
         section.removeChild(article)
         let getItem = JSON.parse(localStorage.getItem('items'));
 
+        
         let itemsFilter = getItem.filter(cart => cart.id !== dataId || cart.color !== dataColor)
         let newItem = itemsFilter
         localStorage.setItem('items', JSON.stringify(newItem));
@@ -142,49 +131,20 @@ for(let item of getItem) {
         totalPrice.innerHTML = totalItemPrice 
         totalQty.innerHTML = totalQuantity;
     })
+    getItem.sort((a, b) => {
+        if (a._id < b._id) {
+            return -1;
+        }
+        if (a._id > b._id) {
+            return 1;
+        }
+        return 0
+    })
 }
-
-arrytest.sort((a, b) => {
-    if (a._id < b._id) {
-        return -1;
-    }
-    if (a._id > b._id) {
-        return 1;
-    }
-    return 0
-})
 console.log(arrytest)
-listItem()
-})
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+listItem()
 
 let firstName = document.getElementById('firstName')
 let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
