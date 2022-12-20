@@ -1,246 +1,199 @@
-let getItem = JSON.parse(localStorage.getItem('items'));
-let arrytest= []
+const getItem = JSON.parse(localStorage.getItem('items'));
+const dataList= [];
+
 for(let item of getItem) {
-    color = item.color
-    fetch(`http://localhost:3000/api/products/${item.id}`)
+    await fetch(`http://localhost:3000/api/products/${item.id}`)
     .then(response => response.json())
     .then(data => {
-        data.color = item.color
-        data.quantity = item.quantity
-        data.id = item.id
-        arrytest.push(data)
-        console.log(arrytest)
-        localStorage.setItem('items', JSON.stringify(arrytest));
-        })
-            }
-
-    const listItem = function() {
-                
-                
-        
-        for(let data of getItem) {
-        let section = document.getElementById("cart__items")
-        let article = document.createElement("article")
-
-        article.classList.add("cart__item")
-        section.appendChild(article)
-        article.dataId = data._id
-        article.dataColor = data.color
-        
-        let divImg = document.createElement("div")
-        divImg.classList.add("cart__item__img")
-        article.appendChild(divImg)
-        
-        let img = document.createElement("img")
-        img.src = data.imageUrl
-        img.alt = data.altTxt
-        divImg.appendChild(img)
-        
-        let divContent = document.createElement("div")
-        divContent.classList.add("cart__item__content")
-        article.appendChild(divContent)
-        
-        let contentDescription =document.createElement("div")
-        contentDescription.classList.add("cart__item__content__description")
-    divContent.appendChild(contentDescription)
-    
-    let itemTitle =document.createElement("h2");
-    itemTitle.innerText = data.name;
-    contentDescription.appendChild(itemTitle);
-    
-    let color =document.createElement("p");
-    color.innerText = data.color;
-    contentDescription.appendChild(color);
-    
-    let quantity =document.createElement("p");
-    quantity.innerText = `${data.price} €`;
-    contentDescription.appendChild(quantity);
-    
-    let Contentsettings = document.createElement("div");
-    Contentsettings.classList.add("cart__item__content__settings");
-    divContent.appendChild(Contentsettings);
-    
-    let Contentquantity =document.createElement("p");
-    Contentquantity.classList.add("cart__item__content__settings__quantity");
-    quantity.innerText = `Qté: ${data.quantity}`;
-    Contentsettings.appendChild(Contentquantity);
-    
-    let price =document.createElement("p");
-    Contentquantity.classList.add("cart__item__content__settings__quantity");
-    quantity.innerText = `${data.price} €`;
-    Contentquantity.append(price);
-    
-    let addQuantity =document.createElement("input");
-    addQuantity.name = "itemQuantity";
-    addQuantity.value = data.quantity;
-    addQuantity.min = 1;
-    addQuantity.max = 100;
-    addQuantity.type = "number";
-    addQuantity.classList.add("itemQuantity");
-    Contentsettings.appendChild(addQuantity);
-    
-    let totalQty = document.getElementById("totalQuantity");
-    const total = getItem.map(item => item.quantity).reduce((pre, curr) => pre +curr, 0);
-    totalQty.innerHTML = total;
-    
-    let totalPrice = document.getElementById("totalPrice");
-    if(data._id === data.id) {
-        data.price = data.price
-        data.subTotal = data.quantity * data.price
-        let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
-        totalPrice.innerHTML = totalItemPrice 
+        data.color = item.color;
+        data.quantity = Number(item.quantity);
+        data.id= item.id;
+        dataList.push(data);
+    })
+};
+const listItem =  function() {
+    for(let item of dataList) {
+        const section = document.getElementById("cart__items")
+        section.innerHTML += 
+        `<article class="cart__item" data-id="${item._id}" data-color="${item.color}">
+            <div class="cart__item__img">
+                <img src="${item.imageUrl}" alt="${item.altTxt}">
+            </div>
+            <div class="cart__item__content">
+                <div class="cart__item__content__description">
+                    <h2>${item.name}</h2>
+                    <p>${item.color}</p>
+                    <p>${item.price} €</p>
+                </div>
+                <div class="cart__item__content__settings">
+                    <div class="cart__item__content__settings__quantity">
+                        <p>Qté :</p>
+                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" data-id="${item._id}" data-color="${item.color}" value=${Number(item.quantity)}>
+                    </div>
+                    <div class="cart__item__content__settings__delete">
+                        <p class="deleteItem">Supprimer</p>
+                    </div>
+                </div>
+            </div>
+        </article>`;
     }
-    
-    addQuantity.addEventListener('change', (e) =>{
-        data.quantity = Number(e.target.value);
-        localStorage.setItem('items', JSON.stringify(getItem));
-        const total = getItem.map(item =>item.quantity).reduce((pre, curr) => pre +curr, 0);
-        totalQty.innerHTML = total;
-        
-        if(data._id === data.id) {
-            data.subTotal = data.quantity * data.price
-            let totalItemPrice = getItem.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
-            totalPrice.innerHTML = totalItemPrice 
-        }
-    })
-    
-    let divDelete = document.createElement("div")
-    divDelete.classList.add("cart__item__content__settings__delete")
-    Contentsettings.appendChild(divDelete)
-    
-    let deleteItem = document.createElement("p")
-    deleteItem.classList.add("deleteItem")
-    deleteItem.innerText = "Supprimer"
-    let dataId = article.dataset.id = data.id
-    let dataColor = article.dataset.color = data.color
-    divDelete.appendChild(deleteItem)
-    
-    deleteItem.addEventListener("click", () => {
-        deleteItem.closest(".cart__item")
-        section.removeChild(article)
-        let getItem = JSON.parse(localStorage.getItem('items'));
-
-        
-        let itemsFilter = getItem.filter(cart => cart.id !== dataId || cart.color !== dataColor)
-        let newItem = itemsFilter
-        localStorage.setItem('items', JSON.stringify(newItem));
-        item.price = data.price
-        item.subTotal = item.price
-        let totalItemPrice = itemsFilter.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
-        let totalQuantity = itemsFilter.map(item => item.quantity).reduce((pre, curr) => pre + curr, 0)
-        totalPrice.innerHTML = totalItemPrice 
-        totalQty.innerHTML = totalQuantity;
-    })
-    getItem.sort((a, b) => {
-        if (a._id < b._id) {
-            return -1;
-        }
-        if (a._id > b._id) {
-            return 1;
-        }
-        return 0
-    })
 }
-console.log(arrytest)
-
-}
+dataList.sort((a, b) => {
+    if (a._id < b._id) {
+        return -1;
+    }
+    if (a._id > b._id) {
+        return 1;
+    }
+    return 0
+})
 listItem()
 
-let firstName = document.getElementById('firstName')
-let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
-firstName.addEventListener('blur', (e) => {
-    let text = e.target.value
-    let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
-    if(!regex.test(text)) {
-        firstNameErrorMsg.innerHTML = "Veuillez saisir votre prénom"
-    }
-    else {
-        firstNameErrorMsg.innerHTML = ""
-    }
-})
+const articles = document.querySelectorAll('.cart__item')
+const displayTotalPrice = document.getElementById('totalPrice')
+const totalQty = document.getElementById('totalQuantity')
 
-let lastName = document.getElementById('lastName')
-let lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
-lastName.addEventListener('blur', (e) => {
-    let text = e.target.value
-    let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
-    if(!regex.test(text)) {
-        lastNameErrorMsg.innerHTML = "Veuillez saisir votre nom"
-    }
-    else {
-        lastNameErrorMsg.innerHTML = ""
-    }
-})
+const totalQuantity = function() {
+    let totalItemQty = dataList.map(item => item.quantity).reduce((pre, curr) => pre + curr, 0)
+    totalQty.innerHTML = totalItemQty 
+}
+totalQuantity()
 
-let address = document.getElementById('address')
-let addressErrorMsg = document.getElementById('addressErrorMsg')
-address.addEventListener('blur', (e) => {
-    let text = e.target.value
-    let regex = new RegExp(/^[0-9]{1,3}[a-zA-Zéêëèîïâäçù ,'-]{3,30}$/)
-    if(!regex.test(text)) {
-        addressErrorMsg.innerHTML = "Veuillez saisir votre adresse"
+const totalPrice = function() {
+    for(let article of articles) {
+        let item = dataList.find(element => element.id === article.dataset.id && element.color === article.dataset.color)
+        item.subTotal = item.quantity * item.price;
+        let totalItemPrice = dataList.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
+        localStorage.setItem('items', JSON.stringify(dataList));
+        displayTotalPrice.innerHTML = totalItemPrice;
+        console.log(item.subTotal)
     }
-    else {
-        addressErrorMsg.innerHTML = ""
-    }
-})
-
-let city = document.getElementById('city')
-let cityErrorMsg = document.getElementById('cityErrorMsg')
-city.addEventListener('blur', (e) => {
-    let text = e.target.value
-    let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
-    if(!regex.test(text)) {
-        cityErrorMsg.innerHTML = "Veuillez saisir votre ville"
-    }
-    else {
-        cityErrorMsg.innerHTML = ""
-    }
-})
-
-let email = document.getElementById('email')
-let emailErrorMsg = document.getElementById('emailErrorMsg')
-email.addEventListener('blur', (e) => {
-    let text = e.target.value
-    let regex = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
-    if(!regex.test(text)) {
-        emailErrorMsg.innerHTML = "Email invalide"
-    }
-    else {
-        emailErrorMsg.innerHTML = ""
-    }
-})
-
-let order = document.getElementById('order')
-order.addEventListener('click', (e) => {
-    e.preventDefault(e)
-    let products = getItem.map(product => product.id)
-    let contact = {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        address: address.value,
-        city: city.value,
-        email: email.value
-    }
+}
+totalPrice()
     
-    fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-            "Accept": "application/json"
-        },
-        body: JSON.stringify({contact, products})
-    })
-    .then(response => {
-        if(response.status === 201) {
-            return response.json()
-        }
-    })
-    .then(data => {
-        if(getItem && contact) {
-            window.location.href = `confirmation.html?orderId=${data.orderId}`;
-            let getItem = []
-            localStorage.setItem('items', JSON.stringify(getItem));
-        }
-    })
-})
+const changeTotal = function() {
+    let changeQty = document.querySelectorAll('.itemQuantity')
+    for(let qty of changeQty) {
+        qty.addEventListener('change', (e) => {
+            let item = dataList.find(element => element.id === qty.dataset.id && element.color === qty.dataset.color)
+            item.quantity = Number(e.target.value)
+            let totalItemQty = dataList.map(item => item.quantity).reduce((pre, curr) => pre + curr, 0)
+            totalQty.innerHTML = totalItemQty;
+            item.subTotal = item.quantity * item.price;
+            let totalItemPrice = dataList.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
+            console.log(dataList)
+            localStorage.setItem('items', JSON.stringify(dataList));
+            displayTotalPrice.innerHTML = totalItemPrice 
+        })
+    }
+}
+changeTotal()
+
+    // dataList.sort((a, b) => {
+    //     if (a._id < b._id) {
+    //         return -1;
+    //     }
+    //     if (a._id > b._id) {
+    //         return 1;
+    //     }
+    //     return 0
+    // })
+
+// let firstName = document.getElementById('firstName')
+// let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
+// firstName.addEventListener('blur', (e) => {
+//     let text = e.target.value
+//     let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
+//     if(!regex.test(text)) {
+//         firstNameErrorMsg.innerHTML = "Veuillez saisir votre prénom"
+//     }
+//     else {
+//         firstNameErrorMsg.innerHTML = ""
+//     }
+// })
+
+// let lastName = document.getElementById('lastName')
+// let lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
+// lastName.addEventListener('blur', (e) => {
+//     let text = e.target.value
+//     let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
+//     if(!regex.test(text)) {
+//         lastNameErrorMsg.innerHTML = "Veuillez saisir votre nom"
+//     }
+//     else {
+//         lastNameErrorMsg.innerHTML = ""
+//     }
+// })
+
+// let address = document.getElementById('address')
+// let addressErrorMsg = document.getElementById('addressErrorMsg')
+// address.addEventListener('blur', (e) => {
+//     let text = e.target.value
+//     let regex = new RegExp(/^[0-9]{1,3}[a-zA-Zéêëèîïâäçù ,'-]{3,30}$/)
+//     if(!regex.test(text)) {
+//         addressErrorMsg.innerHTML = "Veuillez saisir votre adresse"
+//     }
+//     else {
+//         addressErrorMsg.innerHTML = ""
+//     }
+// })
+
+// let city = document.getElementById('city')
+// let cityErrorMsg = document.getElementById('cityErrorMsg')
+// city.addEventListener('blur', (e) => {
+//     let text = e.target.value
+//     let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
+//     if(!regex.test(text)) {
+//         cityErrorMsg.innerHTML = "Veuillez saisir votre ville"
+//     }
+//     else {
+//         cityErrorMsg.innerHTML = ""
+//     }
+// })
+
+// let email = document.getElementById('email')
+// let emailErrorMsg = document.getElementById('emailErrorMsg')
+// email.addEventListener('blur', (e) => {
+//     let text = e.target.value
+//     let regex = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
+//     if(!regex.test(text)) {
+//         emailErrorMsg.innerHTML = "Email invalide"
+//     }
+//     else {
+//         emailErrorMsg.innerHTML = ""
+//     }
+// })
+
+// let order = document.getElementById('order')
+// order.addEventListener('click', (e) => {
+//     e.preventDefault(e)
+//     let products = dataList.map(product => product.id)
+//     let contact = {
+//         firstName: firstName.value,
+//         lastName: lastName.value,
+//         address: address.value,
+//         city: city.value,
+//         email: email.value
+//     }
+    
+//     fetch("http://localhost:3000/api/products/order", {
+//         method: "POST",
+//         headers: {
+//             'Content-Type': 'application/json',
+//             "Accept": "application/json"
+//         },
+//         body: JSON.stringify({contact, products})
+//     })
+//     .then(response => {
+//         if(response.status === 201) {
+//             return response.json()
+//         }
+//     })
+//     .then(data => {
+//         if(dataList && contact) {
+//             window.location.href = `confirmation.html?orderId=${data.orderId}`;
+//             let dataList = []
+//             localStorage.setItem('itemstest', JSON.stringify(dataList));
+//         }
+//     })
+// })
