@@ -11,9 +11,10 @@ for(let item of getItem) {
         dataList.push(data);
     })
 };
+const section = document.getElementById("cart__items")
+
 const listItem =  function() {
     for(let item of dataList) {
-        const section = document.getElementById("cart__items")
         section.innerHTML += 
         `<article class="cart__item" data-id="${item._id}" data-color="${item.color}">
             <div class="cart__item__img">
@@ -66,7 +67,6 @@ const totalPrice = function() {
         let totalItemPrice = dataList.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
         localStorage.setItem('items', JSON.stringify(dataList));
         displayTotalPrice.innerHTML = totalItemPrice;
-        console.log(item.subTotal)
     }
 }
 totalPrice()
@@ -89,19 +89,32 @@ const changeTotal = function() {
 }
 changeTotal()
 
-    // dataList.sort((a, b) => {
-    //     if (a._id < b._id) {
-    //         return -1;
-    //     }
-    //     if (a._id > b._id) {
-    //         return 1;
-    //     }
-    //     return 0
-    // })
-
-// let firstName = document.getElementById('firstName')
-// let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
-// firstName.addEventListener('blur', (e) => {
+const dltSelectItem = function() {
+    const deleteItems = document.querySelectorAll('.deleteItem')
+    deleteItems.forEach(deleteItem => {
+        deleteItem.addEventListener("click", (e) => {
+            e.preventDefault()
+            let dataList = JSON.parse(localStorage.getItem('items'));
+            let articleDlt = deleteItem.closest('article')
+            let itemsFilter = dataList.filter(product => product.id !== articleDlt.dataset.id || product.color !== articleDlt.dataset.color)
+            articleDlt.remove()
+            let newItem = itemsFilter
+            localStorage.setItem('items', JSON.stringify(newItem));
+            let totalItemPrice = itemsFilter.map(item => item.subTotal).reduce((pre, curr) => pre + curr, 0)
+            let totalQuantity = itemsFilter.map(item => item.quantity).reduce((pre, curr) => pre + curr, 0)
+            displayTotalPrice.innerHTML = totalItemPrice 
+            totalQty.innerHTML = totalQuantity;
+        })
+    })
+}
+dltSelectItem()            
+        
+        
+        
+        
+        // let firstName = document.getElementById('firstName')
+    // let firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
+    // firstName.addEventListener('blur', (e) => {
 //     let text = e.target.value
 //     let regex = new RegExp(/^[a-zA-Zéêëèîïâäçù ,'-]{3,20}$/)
 //     if(!regex.test(text)) {
