@@ -9,36 +9,34 @@ let id = params.get('id');
  fetch(`http://localhost:3000/api/products/${id}`)
 .then(response => response.json())
 .then(data => {
-
-    const imgBlock = document.querySelector(".item__img");
-    imgBlock.innerHTML += `<img src="${data.imageUrl}" alt="${data.altTxt}">`
+    const itemImg = document.querySelector(".item__img");
+    itemImg.innerHTML = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
 
     const title = document.getElementById('title');
     title.innerText = data.name;
     
     const price = document.getElementById('price');
     price.innerText = data.price;
-    
+
     const description = document.getElementById('description');
     description.innerText = data.description;
 
-    const chooseColor = document.getElementById('colors');
-        data.colors.map(color => {
-            chooseColor.innerHTML += `<option value="${color}">${color}</option>`
-            let option = document.querySelectorAll('.colors option')
-            option.value = color;
-            option.innerText = color;
-    })
+    const colors = document.getElementById('colors');
+    const chooseColor = function() {
+        for(let color of data.colors) {
+            colors.innerHTML += `<option value="${color}">${color}</option>`
+        }
+    }
+    chooseColor()
     
     let itemQuantity = document.getElementById("quantity");
-    itemQuantity.value = 1;
-    
+    itemQuantity.value = 1
     function quantity() {   
         return Number(itemQuantity.value);
     }
     
     class Item {
-        constructor(id, color, quantity) {
+        constructor(id, color, quantity, img) {
             this.id = id;
             this.color = color;
             this.quantity = quantity;
@@ -47,36 +45,10 @@ let id = params.get('id');
     
     const addToCart = document.getElementById('addToCart');
     addToCart.addEventListener('click', () => {
-        let newItem = new Item(data._id, chooseColor.value, quantity());
+        let newItem = new Item(data._id, colors.value, Number(quantity()));
         let getItem = JSON.parse(localStorage.getItem('items'));
-        let itemColor = document.querySelector('.item__content__settings__color')
-        let errorColor = document.createElement('p');
-        let displayErrorColor = document.querySelector('.item__content__settings__color p')
-        let itemQty = document.querySelector('.item__content__settings__quantity')
-        let errorQty = document.createElement('p') 
-        let displayErrorQty = document.querySelector('.item__content__settings__quantity p')
-
-        
-        if((itemQuantity.value < 1 || itemQuantity.value > 100) || !chooseColor.value) {
-
-            if(!displayErrorColor && !chooseColor.value) {
-                errorColor.innerText = "Veuillez selectionner une couleur"
-                itemColor.append(errorColor)
-            }
-            else if(displayErrorColor !== null && chooseColor.value)  {
-                displayErrorColor.remove();
-            }
-            if(itemQuantity.value < 1 || itemQuantity.value > 100 && !displayErrorQty) {
-                errorQty.innerText = "Veuillez entrer un nombre entre 1 et 100"
-                itemQty.append(errorQty)
-            }
-            else if(itemQuantity.value >= 1 || itemQuantity.value <= 100) {
-                displayErrorQty.remove()
-            }
-        }
-        if(itemQuantity.value >= 1 || itemQuantity.value <= 100 && chooseColor.value) {
-
-            if(getItem && newItem.color && itemQuantity.value >= 1 || itemQuantity.value <= 100){
+        if(newItem.color && newItem.quantity >= 1 && newItem.quantity <= 100){
+            if(getItem){
                 let changeQty = getItem.find(element => element.id == newItem.id && element.color == newItem.color )
                 if(changeQty) {
                     changeQty.quantity = newItem.quantity
@@ -87,19 +59,39 @@ let id = params.get('id');
                     localStorage.setItem('items', JSON.stringify(getItem));
                 }
             }
-            else if(newItem.color  && itemQuantity.value >= 1 || itemQuantity.value <= 100) {
+            else {
                 getItem= [];
-                newItem.img = data.imageUrl
                 getItem.push(newItem);
                 localStorage.setItem('items', JSON.stringify(getItem));
             }
-            
         }
 
+        const errorColor= function() {
+            let itemColor = document.querySelector('.item__content__settings__color')
+            let errorColor = document.createElement('p');
+            let displayErrorColor = document.querySelector('.item__content__settings__color p')
+            if(!displayErrorColor && !colors.value) {
+                errorColor.innerText = "Veuillez selectionner une couleur"
+                itemColor.append(errorColor)
+            }
+            if(colors.value && displayErrorColor !== null)  {
+                displayErrorColor.remove()
+            }
+        }
+        errorColor()
 
-
-        
-       
-
+        const errorQty= function() {
+            let itemQty = document.querySelector('.item__content__settings__quantity')
+            let errorQty = document.createElement('p') 
+            let displayErrorQty = document.querySelector('.item__content__settings__quantity p')
+            if((quantity() < 1 || quantity() > 100) && !displayErrorQty) {
+                errorQty.innerText = "Veuillez selectionner une quantité entre 1 et 100"
+                itemQty.append(errorQty)
+            }
+            if(quantity() >= 1 && quantity() <= 100 && displayErrorQty !== null)  {
+                displayErrorQty.remove()
+            }
+        }
+        errorQty()
     })
 })
