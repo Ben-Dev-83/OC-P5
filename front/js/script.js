@@ -1,4 +1,5 @@
-const callApi = async function () {
+// Appel de l'api pour afficher les produits dans la page d'accueil
+const callApi = function () {
   fetch("http://localhost:3000/api/products")
   .then(response => response.json())
   .then(data => {
@@ -13,8 +14,11 @@ const callApi = async function () {
       </article>
     </a>`
     }
-    
   })
+  .catch(error => {
+    const itemContainer = document.querySelector('#items');
+    itemContainer.innerHTML = `<p>Erreur lors du chargement des produits</p>`
+})
 }
 callApi()
   
